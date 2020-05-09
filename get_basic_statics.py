@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
+import scipy
 from collections import Counter
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def get_basic_statics(x):
@@ -28,6 +31,10 @@ def get_basic_statics(x):
             "min": min(x),
             "average": np.nanmean(x),
             "median": np.nanmedian(x),
+            "variance": np.var(x),
+            "std": np.std(x),
+            "skew": scipy.stats.skew(x),
+            "kurtosis": scipy.stats.kurtosis(x),
             "missing rario": pd.Series(x).isna().sum() / len(x),
             "unique counts": len(c.keys()),
             "most label": c.most_common()[0][0],
@@ -55,8 +62,19 @@ if __name__ == "__main__":
     sample = pd.DataFrame({
         "ID": [1, 2, 3],
         "Name": ["hoge", "huga", "piyo"],
-        "score": [60, 40, 100]
+        "score": [60, 40, 100],
+        "height": [160, 145, 175],
+        "sex": [1, 0, 0]
     })
     report_path = "./basic_statics_from_DF.csv"
     sample.describe(include="all").to_csv(report_path, encoding="utf-8-sig")
+
+    # classification featurs
+    numerical_feats = sample.dtypes[sample.dtypes != "object"].index
+    categorical_feats= sample.dtypes[sample.dtypes == "object"].index
+
+    # plot 回帰直線
+    sns.regplot(x=numerical_feats[0], y=numerical_feats[1], data=sample)
+    plt.savefig("./seaborntest.png")
+
     
