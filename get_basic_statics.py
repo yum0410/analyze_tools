@@ -51,6 +51,17 @@ def get_basic_statics(x):
     return result
 
 
+def get_crosstab(x, y):
+    ct = pd.crosstab(x, y)
+    table = np.array(ct).astype(np.float32)
+    n = table.sum()
+    colsum = table.sum(axis=0)
+    rowsum = table.sum(axis=1)
+    expect = np.outer(rowsum, colsum) / n
+    chisq = np.sum((table - expect) ** 2 / expect)
+    return ct, np.sqrt(chisq / (n * (np.min(table.shape) - 1)))
+
+
 if __name__ == "__main__":
     hoge = ["A", "A", "A", "B", "A", "B", "C", "C", "D"]
     huga = [1, 0.5, 3, 4, np.nan]
@@ -77,4 +88,7 @@ if __name__ == "__main__":
     sns.regplot(x=numerical_feats[0], y=numerical_feats[1], data=sample)
     plt.savefig("./seaborntest.png")
 
-    
+    # ラベル間の相関係数を測定
+    ct, score = get_crosstab(sample["Name"], sample["sex"])
+    print(score)
+    print(ct)
