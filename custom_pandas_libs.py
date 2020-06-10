@@ -17,6 +17,18 @@ def check_to_csv(df):
         raise Exception("over limit word count!")
     return {"drop_index": drop_index}
 
+def count_values_in_column(data: pd.DataFrame, feature: str):
+    total = data.loc[:, feature].value_counts(dropna=False)
+    percentage = round(data.loc[:, feature].value_counts(dropna=False, normalize=True)*100, 2)
+    return pd.concat([total, percentage], axis=1, keys=['Total', 'Percentage'])
+
+def duplicated_values_data(data):
+    dup=[]
+    columns=data.columns
+    for i in data.columns:
+        dup.append(sum(data[i].duplicated()))
+    return pd.concat([pd.Series(columns),pd.Series(dup)],axis=1,keys=['Columns','Duplicate count'])
+
 if __name__ == "__main__":
     sample = pd.DataFrame({
         "ID": [1, 2, 3],
@@ -28,3 +40,9 @@ if __name__ == "__main__":
     })
     result = check_to_csv(sample)
     sample.to_csv("sample.csv", index=result["drop_index"])
+
+    cv = count_values_in_column(sample, "Name")
+    print(cv)
+
+
+
