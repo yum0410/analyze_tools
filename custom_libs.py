@@ -40,6 +40,10 @@ def remove_emoji(text):
                            "]+", flags=re.UNICODE)
     return emoji_pattern.sub(r'', text)
 
+def remove_html(text):
+    html=re.compile(r'<.*?>')
+    return html.sub(r'',text)
+
 if __name__ == "__main__":
     hoge = [1,1,3,4,5,6,9,9,9,10]
     print(counter_fill_key(hoge))
@@ -47,4 +51,12 @@ if __name__ == "__main__":
     print(set_sort(hoge))
     huga = [1, 2, 3]
     print(sub_list(hoge, huga))
+    
     print(find_emoji("ありがとうございます😊"))
+    
+    html_text = """<div>
+<h1>Real or Fake</h1>
+<p>Kaggle </p>
+<a href="https://www.kaggle.com/c/nlp-getting-started">getting started</a>
+</div>"""
+    print(remove_html(html_text))
