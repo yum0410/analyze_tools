@@ -1,6 +1,7 @@
 from collections import Counter
 import re
 import emoji
+from spellchecker import SpellChecker
 
 
 def counter_fill_key(list):
@@ -44,6 +45,17 @@ def remove_html(text):
     html=re.compile(r'<.*?>')
     return html.sub(r'',text)
 
+spell = SpellChecker()
+def correct_spellings(text):
+    corrected_text = []
+    misspelled_words = spell.unknown(text.split())
+    for word in text.split():
+        if word in misspelled_words:
+            corrected_text.append(spell.correction(word))
+        else:
+            corrected_text.append(word)
+    return " ".join(corrected_text)
+        
 if __name__ == "__main__":
     hoge = [1,1,3,4,5,6,9,9,9,10]
     print(counter_fill_key(hoge))
@@ -60,3 +72,6 @@ if __name__ == "__main__":
 <a href="https://www.kaggle.com/c/nlp-getting-started">getting started</a>
 </div>"""
     print(remove_html(html_text))
+
+    text = "corect me plese"
+    print(correct_spellings(text))
