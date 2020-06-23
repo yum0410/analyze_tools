@@ -34,7 +34,7 @@ def is_file(save_path, extension_type):
         return True
     return False
 
-def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True):
+def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x_nan=False):
     """
     make histogram
 
@@ -70,10 +70,21 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True):
         # sorting by x(value)
         value_counts = OrderedDict(sorted(value_counts.most_common()))
 
+    # fill_x_nan
+    if fill_x_nan:
+        if all([True if type(x) is int else False for x in array]):
+            x_positions = range(min(array), max(array))
+            for i in x_positions:
+                if not value_counts.get(i):
+                    value_counts[i] = 0
+            value_counts = OrderedDict(sorted(value_counts.items(), key=lambda x: x[0]))
+
     # make plot
     plt.figure()
-    plt.bar(range(1, len(value_counts.keys())+1), value_counts.values(), tick_label=value_counts.keys(), align="center")
-    plt.xticks(range(1, len(value_counts.keys())+1), value_counts.keys(), fontproperties=font_prop)
+    x_positions = range(1, len(value_counts.keys())+1)
+    print(x_positions, value_counts)
+    plt.bar(x_positions, value_counts.values(), tick_label=value_counts.keys(), align="center")
+    plt.xticks(x_positions, value_counts.keys(), fontproperties=font_prop)
     if bar_title:
         plt.title(bar_title, FontProperties=font_prop)
 
@@ -97,3 +108,5 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True):
 if __name__ == "__main__":
     hoge = ["A", "A", "A", "B", "A", "B", "C", "C", "D"]
     print(make_histogram(hoge, "hoge_ヒストグラム", "./hoge/hoge.png"))
+    huga = [4, 1, 5, 4, 4, 10]
+    print(make_histogram(huga, "huga_ヒストグラム", "./huga/huga.png", sort_by_y=False, fill_x_nan=True))
