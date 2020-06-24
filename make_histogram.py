@@ -3,6 +3,7 @@ from matplotlib.font_manager import FontProperties
 import os
 from collections import Counter, OrderedDict
 import datetime
+import pandas as pd
 
 
 FONT_PATH = "./ipaexg.ttf"
@@ -105,8 +106,37 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x
             plt.savefig(os.path.join(save_path, file_name))
     return value_counts
 
+
+def make_stack_bar_plot(values, bar_title=None, save_path=None):
+    plt.figure()
+    fig, ax = plt.subplots()
+    for i in range(len(dataset)):
+        ax.bar(dataset.columns, dataset.iloc[i], bottom=dataset.iloc[:i].sum())
+    plt.legend(dataset.index, prop=font_prop)
+    if bar_title:
+        plt.title(bar_title, FontProperties=font_prop)
+    # saving
+    if save_path:
+        if is_file(save_path, "png"):
+            # make save path dir
+            save_dir = os.path.join(*save_path.split("/")[:-1])
+            os.makedirs(save_dir, exist_ok=True)
+            plt.savefig(save_path)
+        else:
+            # make save path dir
+            os.makedirs(save_path, exist_ok=True)
+
+            # file name as datetime_hist.png
+            now = datetime.datetime.now()
+            file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
+            plt.savefig(os.path.join(save_path, file_name))
+
 if __name__ == "__main__":
     hoge = ["A", "A", "A", "B", "A", "B", "C", "C", "D"]
     print(make_histogram(hoge, "hoge_ヒストグラム", "./hoge/hoge.png"))
     huga = [4, 1, 5, 4, 4, 10]
     print(make_histogram(huga, "huga_ヒストグラム", "./huga/huga.png", sort_by_y=False, fill_x_nan=True))
+    dataset = pd.DataFrame([[100, 200, 300], [300, 400, 500]],
+                        columns=['A', 'B', 'C'], 
+                        index=['正解', '不正解'])
+    make_stack_bar_plot(dataset, "stack_bar_plot", "./piyo/piyo.png")
