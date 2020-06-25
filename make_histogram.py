@@ -4,6 +4,7 @@ import os
 from collections import Counter, OrderedDict
 import datetime
 import pandas as pd
+import numpy as np
 
 
 FONT_PATH = "./ipaexg.ttf"
@@ -131,6 +132,42 @@ def make_stack_bar_plot(values, bar_title=None, save_path=None):
             file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
             plt.savefig(os.path.join(save_path, file_name))
 
+
+def make_pareto_chart(bar_value_counts, line_array, x_labels=None, bar_title=None, save_path=None):
+    plt.figure()
+    fig, ax1 = plt.subplots()
+    ax1.bar(range(len(bar_value_counts)), bar_value_counts.values)
+    ax1.set_xticks(range(len(bar_value_counts)))
+    if x_labels:
+        ax1.set_xticklabels(x_labels, fontproperties=font_prop)
+    else:
+        ax1.set_xticklabels(bar_value_counts.keys())
+    ax1.set_xlabel("label")
+    ax1.set_ylabel("counts")
+
+    ax2 = ax1.twinx()
+    ax2.plot(range(len(bar_value_counts)), line_array, c="k", marker="o")
+    ax2.set_ylim([0, 100])
+    ax2.grid(True, which='both', axis='y')
+    if bar_title:
+        plt.title(bar_title, FontProperties=font_prop)
+    # saving
+    if save_path:
+        if is_file(save_path, "png"):
+            # make save path dir
+            save_dir = os.path.join(*save_path.split("/")[:-1])
+            os.makedirs(save_dir, exist_ok=True)
+            plt.savefig(save_path)
+        else:
+            # make save path dir
+            os.makedirs(save_path, exist_ok=True)
+
+            # file name as datetime_hist.png
+            now = datetime.datetime.now()
+            file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
+            plt.savefig(os.path.join(save_path, file_name))
+
+
 if __name__ == "__main__":
     hoge = ["A", "A", "A", "B", "A", "B", "C", "C", "D"]
     print(make_histogram(hoge, "hoge_ヒストグラム", "./hoge/hoge.png"))
@@ -140,3 +177,9 @@ if __name__ == "__main__":
                         columns=['A', 'B', 'C'], 
                         index=['正解', '不正解'])
     make_stack_bar_plot(dataset, "stack_bar_plot", "./piyo/piyo.png")
+    dataset = pd.DataFrame({"A": [42, 33, 25, 50, 15, 35]})
+    dataset = dataset.sort_values(by="A", ascending=False)
+    dataset["sum"] = np.cumsum(dataset["A"])
+    dataset["percent"] = [(x / max(dataset["sum"])) * 100 for x in dataset["sum"]]
+    make_pareto_chart(dataset["A"], dataset["percent"], ["あ", "い", "ウ", "絵", "お", "蚊"], "pareto_chart", "./pareto_chart/p.png")
+    print(dataset)
