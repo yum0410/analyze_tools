@@ -36,6 +36,23 @@ def is_file(save_path, extension_type):
         return True
     return False
 
+
+def save_png(save_path):
+    if is_file(save_path, "png"):
+        # make save path dir
+        save_dir = os.path.join(*save_path.split("/")[:-1])
+        os.makedirs(save_dir, exist_ok=True)
+        plt.savefig(save_path)
+    else:
+        # make save path dir
+        os.makedirs(save_path, exist_ok=True)
+
+        # file name as datetime_hist.png
+        now = datetime.datetime.now()
+        file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
+        plt.savefig(os.path.join(save_path, file_name))
+    
+
 def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x_nan=False):
     """
     make histogram
@@ -92,19 +109,7 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x
 
     # saving
     if save_path:
-        if is_file(save_path, "png"):
-            # make save path dir
-            save_dir = os.path.join(*save_path.split("/")[:-1])
-            os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(save_path)
-        else:
-            # make save path dir
-            os.makedirs(save_path, exist_ok=True)
-
-            # file name as datetime_hist.png
-            now = datetime.datetime.now()
-            file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
-            plt.savefig(os.path.join(save_path, file_name))
+        save_png(save_path)
     return value_counts
 
 
@@ -118,19 +123,7 @@ def make_stack_bar_plot(values, bar_title=None, save_path=None):
         plt.title(bar_title, FontProperties=font_prop)
     # saving
     if save_path:
-        if is_file(save_path, "png"):
-            # make save path dir
-            save_dir = os.path.join(*save_path.split("/")[:-1])
-            os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(save_path)
-        else:
-            # make save path dir
-            os.makedirs(save_path, exist_ok=True)
-
-            # file name as datetime_hist.png
-            now = datetime.datetime.now()
-            file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
-            plt.savefig(os.path.join(save_path, file_name))
+        save_png(save_path)
 
 
 def make_pareto_chart(bar_value_counts, line_array, x_labels=None, bar_title=None, save_path=None):
@@ -153,19 +146,7 @@ def make_pareto_chart(bar_value_counts, line_array, x_labels=None, bar_title=Non
         plt.title(bar_title, FontProperties=font_prop)
     # saving
     if save_path:
-        if is_file(save_path, "png"):
-            # make save path dir
-            save_dir = os.path.join(*save_path.split("/")[:-1])
-            os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(save_path)
-        else:
-            # make save path dir
-            os.makedirs(save_path, exist_ok=True)
-
-            # file name as datetime_hist.png
-            now = datetime.datetime.now()
-            file_name = "{}_hist.png".format(now.strftime("%Y%m%d%H%M"))
-            plt.savefig(os.path.join(save_path, file_name))
+        save_png(save_path)
 
 
 if __name__ == "__main__":
@@ -181,5 +162,5 @@ if __name__ == "__main__":
     dataset = dataset.sort_values(by="A", ascending=False)
     dataset["sum"] = np.cumsum(dataset["A"])
     dataset["percent"] = [(x / max(dataset["sum"])) * 100 for x in dataset["sum"]]
-    make_pareto_chart(dataset["A"], dataset["percent"], ["あ", "い", "ウ", "絵", "お", "蚊"], "pareto_chart", "./pareto_chart/p.png")
+    make_pareto_chart(dataset["A"], dataset["percent"], ["あ", "い", "ウ", "絵", "お", "蚊"], "pareto_chart", "./pareto_chart/p2.png")
     print(dataset)
