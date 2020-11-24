@@ -53,7 +53,7 @@ def save_png(save_path):
         plt.savefig(os.path.join(save_path, file_name))
     
 
-def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x_nan=False):
+def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x_nan=False, figsize=None):
     """
     make histogram
 
@@ -65,7 +65,8 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x
         the histogram　image file save path.
     sort_by_y : bool
         sorting flag.
-
+    figsize : tuple
+        figure_size. (x, y)
     Returns
     -------
     histogram_data : dict
@@ -87,7 +88,7 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x
         value_counts = OrderedDict(sorted(value_counts.items()))
     else:
         # sorting by x(value)
-        value_counts = OrderedDict(sorted(value_counts.most_common()))
+        value_counts = OrderedDict(value_counts.most_common())
 
     # fill_x_nan
     if fill_x_nan:
@@ -99,11 +100,11 @@ def make_histogram(array, bar_title=None, save_path=None, sort_by_y=True, fill_x
             value_counts = OrderedDict(sorted(value_counts.items(), key=lambda x: x[0]))
 
     # make plot
-    plt.figure()
+    plt.figure(figsize=figsize)
     x_positions = range(1, len(value_counts.keys())+1)
     print(x_positions, value_counts)
     plt.bar(x_positions, value_counts.values(), tick_label=value_counts.keys(), align="center")
-    plt.xticks(x_positions, value_counts.keys(), fontproperties=font_prop)
+    plt.xticks(x_positions, value_counts.keys(), fontproperties=font_prop, rotation=90)
     if bar_title:
         plt.title(bar_title, FontProperties=font_prop)
 
